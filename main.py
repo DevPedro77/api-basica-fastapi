@@ -32,6 +32,25 @@ async def criar_curso(curso: Curso):
       cursos_dict[proximo_id] = curso.dict(exclude={"id"})
       return curso
     
+@app.put("/cursos/{curso_id}")
+async def editar_curso(curso_id: int, curso: Curso):
+    try:
+        curso.id = curso_id
+        if curso_id in cursos_dict:
+            cursos_dict[curso_id] = curso.dict(exclude={"id"})
+        else:
+            raise KeyError
+        return curso
+    except KeyError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Curso não encontrado")
+
+
+@app.delete("/cursos/{curso_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def deletar_curso(curso_id: int,):
+    try:
+        del cursos_dict[curso_id]
+    except KeyError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Curso não encontrado")
 
 if __name__ == "__main__":
     import uvicorn
